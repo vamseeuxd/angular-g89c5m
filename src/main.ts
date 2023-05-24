@@ -14,19 +14,26 @@ import { bootstrapApplication } from '@angular/platform-browser';
 
   <ng-template #planingList let-options="options">
     <ul class="list-group shadow-sm">
-      <ng-container *ngFor="let option of options">
-        <li class="list-group-item  shadow-sm rounded-0" (click)="option.open = !option.open" role="button">
-         <i  *ngIf="option.children && option.children.length > 0" [class.fa-folder-o]="!option.open" [class.fa-folder-open-o]="option.open" class="fa fa-folder-open-o"></i> {{option.title}}
+      <ng-container *ngFor="let option of options; let ind=index">
+        <li class="list-group-item shadow-sm rounded-0">
+            <div class="d-flex justify-content-center align-items-center">
+              <i (click)="option.open = !option.open" role="button" [class.fa-folder-o]="!option.open" [class.fa-folder-open-o]="option.open" class="fa m-0 p-0 me-2"></i> 
+              <label>{{option.title}}</label>
+              <button role="button" (click)="options.splice(ind, 1)" class="btn btn-outline-danger shadow-sm btn-sm ms-auto">
+              <i class="fa fa-trash"></i>
+              </button>
+
+            </div>
         </li>
-        <ng-container *ngIf="option.children && option.children.length > 0 && option.open">
+        <ng-container *ngIf="option.children && option.open">
           <li class="list-group-item shadow-sm rounded-0" >
             <ng-container *ngTemplateOutlet="planingList; context:{options:option.children}"></ng-container>
           </li>
         </ng-container>
-        <li class="list-group-item mt-2 border-top shadow-sm rounded-0">
-          <input class="form-control" placeholder="New Item" #newItem (keyup.enter)="addNewItem(newItem, option)">
-        </li>
-      </ng-container>      
+      </ng-container>   
+      <li class="list-group-item mt-2 border-top shadow-sm rounded-0">
+        <input class="form-control" placeholder="New Item" #newItem (keyup.enter)="options.push({ open: false, title: newItem.value, children: [], });newItem.value = '';">
+      </li>   
     </ul>
   </ng-template>
 
@@ -34,23 +41,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
   `,
 })
 export class App {
-  data = [
-    {
-      open: false,
-      title: 'Test - 01',
-      children: [
-        {
-          open: false,
-          title: 'Test - 01 - 01',
-          children: [],
-        },
-      ],
-    },
-  ];
-  addNewItem(newItem: HTMLInputElement, option: any) {
-    option.children.push({ title: newItem.value, children: [] });
-    newItem.value = '';
-  }
+  data = [];
 }
 
 bootstrapApplication(App);

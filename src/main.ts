@@ -18,11 +18,13 @@ import { bootstrapApplication } from '@angular/platform-browser';
         <li class="list-group-item shadow-sm rounded-0">
             <div class="d-flex justify-content-center align-items-center">
               <i (click)="option.open = !option.open" role="button" [class.fa-folder-o]="!option.open" [class.fa-folder-open-o]="option.open" class="fa m-0 p-0 me-2"></i> 
-              <label>{{option.title}}</label>
+              <div class="d-flex w-100 me-3">
+                <label class="col-6 text-danger">{{option.name}}</label>
+                <label class="col-6 text-success text-end fw-bold">{{option.amount | currency : 'INR'}}</label>
+              </div>
               <button role="button" (click)="options.splice(ind, 1)" class="btn btn-outline-danger shadow-sm btn-sm ms-auto">
               <i class="fa fa-trash"></i>
               </button>
-
             </div>
         </li>
         <ng-container *ngIf="option.children && option.open">
@@ -32,16 +34,50 @@ import { bootstrapApplication } from '@angular/platform-browser';
         </ng-container>
       </ng-container>   
       <li class="list-group-item mt-2 border-top shadow-sm rounded-0">
-        <input class="form-control" placeholder="New Item" #newItem (keyup.enter)="options.push({ open: false, title: newItem.value, children: [], });newItem.value = '';">
+        <div class="input-group">
+          <input type="text" class="form-control me-1" placeholder="Name" #nameRef (keyup.enter)="addItem( options, amountRef, nameRef )">
+          <input type="number" class="form-control ms-1" placeholder="Amount" #amountRef (keyup.enter)="addItem( options, amountRef, nameRef )">
+        </div>
       </li>   
     </ul>
+    <pre>{{data|json}}</pre>
   </ng-template>
-
-
   `,
 })
 export class App {
-  data = [];
+  data = [
+    {
+      open: false,
+      name: 'asdfasdfas',
+      amount: '500',
+      children: [],
+    },
+    {
+      open: false,
+      name: 'asdfasdfasdf',
+      amount: '1000',
+      children: [],
+    },
+  ];
+  addItem(
+    options: any[],
+    amountRef: HTMLInputElement,
+    nameRef: HTMLInputElement
+  ) {
+    if (amountRef.value && nameRef.value) {
+      options.push({
+        open: false,
+        name: nameRef.value,
+        amount: Number(amountRef.value),
+        children: [],
+      });
+      amountRef.value = '';
+      nameRef.value = '';
+    } else {
+      alert('Provide Valid Name and Amount');
+    }
+    nameRef.focus();
+  }
 }
 
 bootstrapApplication(App);
